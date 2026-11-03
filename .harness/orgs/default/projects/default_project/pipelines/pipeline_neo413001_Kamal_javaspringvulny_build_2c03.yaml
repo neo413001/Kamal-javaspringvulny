@@ -1,0 +1,39 @@
+pipeline:
+  id: pipeline_neo413001_Kamal_javaspringvulny_build_2c03
+  name: pipeline_neo413001_Kamal_javaspringvulny_build_2c03
+  stages:
+    - name: Build
+      id: build
+      runtime: cloud
+      platform:
+        os: linux
+        arch: amd64
+      clone:
+        enabled: true
+      cache:
+        enabled: true
+      build-intelligence:
+        enabled: true
+      steps:
+        - name: Setup Java 11
+          id: setup_java
+          run:
+            shell: bash
+            script: |-
+              echo "Setting up Java 11"
+              export JAVA_HOME=$(dirname $(dirname $(readlink -f $(which java))))
+              java -version
+              echo "JAVA_HOME=$JAVA_HOME"
+        - name: Build with Gradle
+          id: build_gradle
+          run:
+            shell: bash
+            script: |-
+              chmod +x ./gradlew
+              ./gradlew build --no-daemon
+            report:
+              type: junit
+              paths:
+                - "**/build/test-results/test/*.xml"
+  tags:
+    onboarding: "true"
